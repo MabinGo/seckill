@@ -15,7 +15,6 @@
     <module>seckill-query-service</module>
 
 
-    <module>docker-build-config</module>
   </modules>
 
   <parent>

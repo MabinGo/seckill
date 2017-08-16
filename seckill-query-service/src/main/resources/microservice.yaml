@@ -9,7 +9,7 @@ cse:
     registry:
       address: http://localhost:30100
   highway:
-    address: 0.0.0.0:7070
+    address: 0.0.0.0:8081
   rest:
     address: 0.0.0.0:8080
   handler:

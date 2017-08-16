@@ -53,15 +53,6 @@
         <groupId>com.github.odavid.maven.plugins</groupId>
         <artifactId>mixin-maven-plugin</artifactId>
         <extensions>true</extensions>
-        <configuration>
-          <mixins>
-            <mixin>
-              <groupId>io.servicecomb.poc.demo</groupId>
-              <artifactId>docker-build-config</artifactId>
-              <version>0.0.1-SNAPSHOT</version>
-            </mixin>
-          </mixins>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
