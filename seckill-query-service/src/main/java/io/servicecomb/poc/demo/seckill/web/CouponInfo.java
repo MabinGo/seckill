@@ -1,20 +1,22 @@
 package io.servicecomb.poc.demo.seckill.web;
 
+import org.hibernate.annotations.Type;
+
 import java.util.Date;
 
 public class CouponInfo {
 
-  private String id;
+  private int id;
   private Date time;
   private String customerId;
   private int count;
   private float discount;
 
-  public String getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -50,10 +52,10 @@ public class CouponInfo {
     this.discount = discount;
   }
 
-  public CouponInfo() {
+  public CouponInfo(int id, Date time, Object customerId, Integer count, Float discount) {
   }
 
-  public CouponInfo(String id, Date time, String customerId, int count, float discount) {
+  public CouponInfo(int id, Date time, String customerId, int count, float discount) {
     this.id = id;
     this.time = time;
     this.customerId = customerId;

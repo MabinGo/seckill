@@ -17,12 +17,12 @@
 package io.servicecomb.poc.demo.seckill.repositories;
 
 import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface CouponEventRepository extends JpaRepository<PromotionEvent, String> {
-  PromotionEvent<String> save(PromotionEvent<String> item);
-  List<PromotionEvent> findByCustomerId(String customerId);
-  List<PromotionEvent> findByTypeNotOrderByTimeDesc(String type);
+public interface SpringBasedCouponEventRepository extends PagingAndSortingRepository<PromotionEvent<String>, Integer>, CouponEventRepository {
+
+  PromotionEvent<String> findTopByCouponIdAndTypeOrderByIdDesc(String couponId, String type);
+  List<PromotionEvent<String>> findByCouponIdAndIdGreaterThan(String couponId, int id);
+
 }

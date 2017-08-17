@@ -14,15 +14,11 @@
  *   limitations under the License.
  */
 
-package io.servicecomb.poc.demo.seckill.repositories;
+package io.servicecomb.poc.demo.seckill.event;
 
-import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
-import org.springframework.data.jpa.repository.JpaRepository;
+public class PromotionEventType {
+  public static final String Start = "start";
+  public static final String SecKill = "seckill";
+  public static final String Finish = "finish";
 
-import java.util.List;
-
-public interface CouponEventRepository extends JpaRepository<PromotionEvent, String> {
-  PromotionEvent<String> save(PromotionEvent<String> item);
-  List<PromotionEvent> findByCustomerId(String customerId);
-  List<PromotionEvent> findByTypeNotOrderByTimeDesc(String type);
 }

@@ -7,8 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import io.servicecomb.poc.demo.CommandQueryApplication;
-import io.servicecomb.poc.demo.seckill.event.CouponEvent;
-import io.servicecomb.poc.demo.seckill.event.CouponEventType;
+import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
+import io.servicecomb.poc.demo.seckill.event.PromotionEventType;
 import io.servicecomb.poc.demo.seckill.repositories.CouponEventRepository;
 import java.nio.charset.Charset;
 import org.junit.Before;
@@ -48,7 +48,7 @@ public class SecKillQueryServiceApplicationTest {
   @Test
   public void testQueryCurrent() throws Exception {
     repository.deleteAll();
-    CouponEvent event = new CouponEvent(CouponEventType.Start,10,(float)0.7);
+    PromotionEvent event = new PromotionEvent(PromotionEventType.Start,10,(float)0.7);
     repository.save(event);
     repository.flush();
 
@@ -59,7 +59,7 @@ public class SecKillQueryServiceApplicationTest {
   @Test
   public void testQuerySuccess() throws Exception {
     repository.deleteAll();
-    CouponEvent event = new CouponEvent(CouponEventType.SecKill,"zyy",1,(float)0.7);
+    PromotionEvent event = new PromotionEvent(PromotionEventType.SecKill,"zyy",1,(float)0.7);
     repository.save(event);
     repository.flush();
 
