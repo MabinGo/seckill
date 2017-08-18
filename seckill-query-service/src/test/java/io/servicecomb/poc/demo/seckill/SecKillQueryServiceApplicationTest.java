@@ -4,66 +4,63 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 import io.servicecomb.poc.demo.CommandQueryApplication;
 import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
-import io.servicecomb.poc.demo.seckill.event.PromotionEventType;
-import io.servicecomb.poc.demo.seckill.repositories.CouponEventRepository;
+import io.servicecomb.poc.demo.seckill.repositories.SpringBasedPromotionEventRepository;
 import java.nio.charset.Charset;
-import org.junit.Before;
+import java.util.Date;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CommandQueryApplication.class)
 @WebAppConfiguration
+@AutoConfigureMockMvc
 public class SecKillQueryServiceApplicationTest {
 
   @Autowired
-  private CouponEventRepository repository;
-
-  private MockMvc mockMvc;
-
-  private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-      MediaType.APPLICATION_JSON.getSubtype(),
-      Charset.forName("utf8"));
+  private SpringBasedPromotionEventRepository repository;
 
   @Autowired
-  private WebApplicationContext webApplicationContext;
+  private MockMvc mockMvc;
 
-  @Before
-  public void setup() throws Exception {
-    this.mockMvc = webAppContextSetup(webApplicationContext).build();
-  }
+  private MediaType contentType = new MediaType(
+      MediaType.APPLICATION_JSON.getType(),
+      MediaType.APPLICATION_JSON.getSubtype(),
+      Charset.forName("utf8")
+  );
+
 
   @Test
   public void testQueryCurrent() throws Exception {
     repository.deleteAll();
-    PromotionEvent event = new PromotionEvent(PromotionEventType.Start,10,(float)0.7);
-    repository.save(event);
-    repository.flush();
+    Promotion promotionTest = new Promotion(new Date(),new Date(),3,0.7f);
+    PromotionEvent<String> event = PromotionEvent.genStartCouponEvent(promotionTest);
+    repository.save((PromotionEvent<String>)event);
 
-    this.mockMvc.perform(get("/query/current").contentType(contentType))
-        .andExpect(status().isOk()).andExpect(content().string(containsString(event.getId())));
+    this.mockMvc.perform(get("/query/promotion").contentType(contentType))
+        .andExpect(status().isOk()).andExpect(content().string(containsString(event.getCouponId())));
   }
+
 
   @Test
   public void testQuerySuccess() throws Exception {
     repository.deleteAll();
-    PromotionEvent event = new PromotionEvent(PromotionEventType.SecKill,"zyy",1,(float)0.7);
-    repository.save(event);
-    repository.flush();
+    Coupon couponsTest = new Coupon(1,"mb",new Date(),0.7f,1);
+    Promotion promotionCouponsTest = new Promotion(new Date(),new Date(),5,0.8f);
+    PromotionEvent<String> event = PromotionEvent.genSecKillCouponEvent(promotionCouponsTest,"mb");
+    repository.save((PromotionEvent<String>)event);
 
-    this.mockMvc.perform(get("/query/success/zyy").contentType(contentType))
-        .andExpect(status().isOk()).andExpect(content().string(containsString(event.getId())));
+
+    this.mockMvc.perform(get("/query/coupons/mb").contentType(contentType))
+        .andExpect(status().isOk()).andExpect(content().string(containsString(event.getCustomerId())));
   }
 }

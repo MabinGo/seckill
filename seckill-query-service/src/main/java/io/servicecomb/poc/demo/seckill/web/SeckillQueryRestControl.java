@@ -1,35 +1,34 @@
 package io.servicecomb.poc.demo.seckill.web;
 
+import io.servicecomb.poc.demo.seckill.Coupon;
 import io.servicecomb.poc.demo.seckill.SecKillEventSubscriber;
-import io.servicecomb.provider.rest.common.RestSchema;
+import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-//use restfull style
-@RestSchema(schemaId = "query")
 @RestController
 @RequestMapping("/query")
-public class SeckillQueryRESTEndpoint implements SecKillQueryEndpoint {
+public class SeckillQueryRestControl {
 
-  private Logger logger = Logger.getLogger(SeckillQueryRESTEndpoint.class.getName());
+  private Logger logger = LoggerFactory.getLogger(SeckillQueryRestControl.class);
 
   @Autowired
   private SecKillEventSubscriber secKillEventSubscriber;
 
-  @Override
-  @RequestMapping(method = RequestMethod.GET,value = "/success/{customerId}")
-  public List<CouponInfo> querySuccess(@PathVariable String customerId) {
+
+  @RequestMapping(method = RequestMethod.GET,value = "/coupons/{customerId}")
+  public List<Coupon> querySuccess(@PathVariable String customerId) {
     return secKillEventSubscriber.querySuccessCoupon(customerId);
   }
 
-  @Override
-  @RequestMapping(method = RequestMethod.GET,value = "/current")
-  public CouponInfo queryCurrent() {
-    return secKillEventSubscriber.queryCurrentCoupon();
+  @RequestMapping(method = RequestMethod.GET,value = "/promotion")
+  public List<PromotionEvent> queryCurrent() {
+    return (List<PromotionEvent>) secKillEventSubscriber.queryCurrentPromotion();
   }
 }

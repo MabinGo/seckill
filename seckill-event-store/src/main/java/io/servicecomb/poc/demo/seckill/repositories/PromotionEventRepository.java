@@ -21,8 +21,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface CouponEventRepository extends JpaRepository<PromotionEvent, String> {
+public interface PromotionEventRepository {
   PromotionEvent<String> save(PromotionEvent<String> item);
-  List<PromotionEvent> findByCustomerId(String customerId);
-  List<PromotionEvent> findByTypeNotOrderByTimeDesc(String type);
 }

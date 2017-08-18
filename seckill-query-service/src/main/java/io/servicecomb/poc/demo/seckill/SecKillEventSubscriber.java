@@ -2,36 +2,43 @@ package io.servicecomb.poc.demo.seckill;
 
 import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
 import io.servicecomb.poc.demo.seckill.event.PromotionEventType;
-import io.servicecomb.poc.demo.seckill.repositories.CouponEventRepository;
-import io.servicecomb.poc.demo.seckill.web.CouponInfo;
+import io.servicecomb.poc.demo.seckill.repositories.PromotionRepository;
+import io.servicecomb.poc.demo.seckill.repositories.SpringBasedPromotionEventRepository;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class SecKillEventSubscriber {
 
-  @Autowired
-  private CouponEventRepository repository;
+  private SpringBasedPromotionEventRepository couponEventRepository;
+  private PromotionRepository promotionRepository;
 
-  public List<CouponInfo> querySuccessCoupon(String customerId){
-    List<PromotionEvent> events = repository.findByCustomerId(customerId);
-    return events.stream().map(
-        event -> new CouponInfo(event.getId(), event.getTime(), event.getCustomerId(), event.getCount(),
-            event.getDiscount())).collect(Collectors.toList());
+  public SecKillEventSubscriber(SpringBasedPromotionEventRepository couponEventRepository,PromotionRepository promotionRepository) {
+    this.couponEventRepository = couponEventRepository;
+    this.promotionRepository = promotionRepository;
   }
 
-  public CouponInfo queryCurrentCoupon(){
-    List<PromotionEvent> events = repository.findByTypeNotOrderByTimeDesc(PromotionEventType.SecKill);
-    for (PromotionEvent event : events) {
-      if(event.getType().equals(PromotionEventType.Start)) {
-        if(events.stream().noneMatch(e -> e.getType().equals(PromotionEventType.Finish) && e.getCustomerId().equals(event.getId()))) {
-          return new CouponInfo(event.getId(), event.getTime(), (String) event.getCustomerId(), event.getCount(),
-              event.getDiscount());
-        }
+  public List<Coupon> querySuccessCoupon(String customerId){
+    return couponEventRepository.findByCustomerId(customerId).stream().map(event -> new Coupon(event)).collect(Collectors.toList());
+  }
+
+  public Promotion queryCurrentPromotion(){
+//    List<PromotionEvent> startEvents = couponEventRepository.findByTypeOrderByTimeDesc(PromotionEventType.Start);
+//    for (PromotionEvent startEvent : startEvents) {
+//      PromotionEvent finishEvent = couponEventRepository.findTopByCouponIdAndTypeOrderByIdDesc(startEvent.getCouponId(),PromotionEventType.Finish);
+//    }
+    //return null;
+
+    List<PromotionEvent> startEvents = couponEventRepository.findByTypeOrderByTimeDesc(PromotionEventType.Start);
+    if(startEvents.size() != 0)
+    {
+      PromotionEvent startEvent = startEvents.get(startEvents.size() -1);
+      PromotionEvent finishEvent = couponEventRepository
+          .findTopByCouponIdAndTypeOrderByIdDesc(startEvent.getCouponId(),PromotionEventType.Finish);
+      if(finishEvent == null){
+        return promotionRepository.findOne(finishEvent.getCouponId());
       }
     }
-    return null;
+     return null;
+
   }
 }
