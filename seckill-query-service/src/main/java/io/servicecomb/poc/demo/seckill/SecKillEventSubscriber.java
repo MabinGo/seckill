@@ -12,33 +12,29 @@ public class SecKillEventSubscriber {
   private SpringBasedPromotionEventRepository couponEventRepository;
   private PromotionRepository promotionRepository;
 
-  public SecKillEventSubscriber(SpringBasedPromotionEventRepository couponEventRepository,PromotionRepository promotionRepository) {
+  public SecKillEventSubscriber(SpringBasedPromotionEventRepository couponEventRepository,
+                                PromotionRepository promotionRepository) {
     this.couponEventRepository = couponEventRepository;
     this.promotionRepository = promotionRepository;
   }
 
   public List<Coupon> querySuccessCoupon(String customerId){
-    return couponEventRepository.findByCustomerId(customerId).stream().map(event -> new Coupon(event)).collect(Collectors.toList());
+    return couponEventRepository.findByCustomerId(customerId).stream()
+            .map(event -> new Coupon(event)).collect(Collectors.toList());
   }
 
   public Promotion queryCurrentPromotion(){
-//    List<PromotionEvent> startEvents = couponEventRepository.findByTypeOrderByTimeDesc(PromotionEventType.Start);
-//    for (PromotionEvent startEvent : startEvents) {
-//      PromotionEvent finishEvent = couponEventRepository.findTopByCouponIdAndTypeOrderByIdDesc(startEvent.getCouponId(),PromotionEventType.Finish);
-//    }
-    //return null;
-
     List<PromotionEvent> startEvents = couponEventRepository.findByTypeOrderByTimeDesc(PromotionEventType.Start);
     if(startEvents.size() != 0)
     {
-      PromotionEvent startEvent = startEvents.get(startEvents.size() -1);
-      PromotionEvent finishEvent = couponEventRepository
-          .findTopByCouponIdAndTypeOrderByIdDesc(startEvent.getCouponId(),PromotionEventType.Finish);
+      PromotionEvent startLatestEvent = startEvents.get(startEvents.size() -1);
+      String CouponId = startLatestEvent.getCouponId();
+      PromotionEvent finishEvent = couponEventRepository.findTopByCouponIdAndTypeOrderByIdDesc(CouponId,
+              PromotionEventType.Finish);
       if(finishEvent == null){
-        return promotionRepository.findOne(finishEvent.getCouponId());
+        return promotionRepository.findOne(CouponId);
       }
     }
      return null;
-
   }
 }

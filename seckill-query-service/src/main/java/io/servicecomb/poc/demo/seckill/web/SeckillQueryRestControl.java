@@ -1,6 +1,7 @@
 package io.servicecomb.poc.demo.seckill.web;
 
 import io.servicecomb.poc.demo.seckill.Coupon;
+import io.servicecomb.poc.demo.seckill.Promotion;
 import io.servicecomb.poc.demo.seckill.SecKillEventSubscriber;
 import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
 import java.util.List;
@@ -24,11 +25,13 @@ public class SeckillQueryRestControl {
 
   @RequestMapping(method = RequestMethod.GET,value = "/coupons/{customerId}")
   public List<Coupon> querySuccess(@PathVariable String customerId) {
+    logger.debug("Get request /query/coupons/%s",customerId);
     return secKillEventSubscriber.querySuccessCoupon(customerId);
   }
 
   @RequestMapping(method = RequestMethod.GET,value = "/promotion")
-  public List<PromotionEvent> queryCurrent() {
-    return (List<PromotionEvent>) secKillEventSubscriber.queryCurrentPromotion();
+  public List<Promotion> queryCurrent() {
+    logger.debug("Get request /query/promotion");
+    return (List<Promotion>) secKillEventSubscriber.queryCurrentPromotion();
   }
 }

@@ -42,6 +42,15 @@
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
     </dependency>
+      <dependency>
+          <groupId>io.servicecomb.poc.demo</groupId>
+          <artifactId>seckill-event-store</artifactId>
+          <scope>test</scope>
+      </dependency>
+    <dependency>
+      <groupId>io.servicecomb.poc.demo</groupId>
+      <artifactId>seckill-event-store</artifactId>
+    </dependency>
 
   </dependencies>
 

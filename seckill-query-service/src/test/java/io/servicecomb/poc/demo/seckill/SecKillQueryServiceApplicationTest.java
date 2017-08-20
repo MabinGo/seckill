@@ -38,29 +38,33 @@ public class SecKillQueryServiceApplicationTest {
       Charset.forName("utf8")
   );
 
+  @Test
+  public void testQuerySuccess() throws Exception {
+    repository.deleteAll();
+
+    Date startTime = new Date();
+    Date finishTime = new Date(startTime.getTime()+10*60*1000);
+
+    Promotion promotionCouponsTest = new Promotion(startTime,finishTime,5,0.8f);
+    PromotionEvent<String> seckillEvent = PromotionEvent.genSecKillCouponEvent(promotionCouponsTest,"mb");
+    repository.save((PromotionEvent<String>)seckillEvent);
+
+    this.mockMvc.perform(get("/query/coupons/mb").contentType(contentType))
+        .andExpect(status().isOk()).andExpect(content().string(containsString("mb")));
+  }
 
   @Test
   public void testQueryCurrent() throws Exception {
     repository.deleteAll();
-    Promotion promotionTest = new Promotion(new Date(),new Date(),3,0.7f);
-    PromotionEvent<String> event = PromotionEvent.genStartCouponEvent(promotionTest);
-    repository.save((PromotionEvent<String>)event);
+
+    Date startTime = new Date();
+    Date finishTime = new Date(startTime.getTime()+10*60*1000);
+
+    Promotion promotionTest = new Promotion(startTime,finishTime,3,0.7f);
+    PromotionEvent<String> startEvent = PromotionEvent.genStartCouponEvent(promotionTest);
+    repository.save((PromotionEvent<String>)startEvent);
 
     this.mockMvc.perform(get("/query/promotion").contentType(contentType))
-        .andExpect(status().isOk()).andExpect(content().string(containsString(event.getCouponId())));
-  }
-
-
-  @Test
-  public void testQuerySuccess() throws Exception {
-    repository.deleteAll();
-    Coupon couponsTest = new Coupon(1,"mb",new Date(),0.7f,1);
-    Promotion promotionCouponsTest = new Promotion(new Date(),new Date(),5,0.8f);
-    PromotionEvent<String> event = PromotionEvent.genSecKillCouponEvent(promotionCouponsTest,"mb");
-    repository.save((PromotionEvent<String>)event);
-
-
-    this.mockMvc.perform(get("/query/coupons/mb").contentType(contentType))
-        .andExpect(status().isOk()).andExpect(content().string(containsString(event.getCustomerId())));
+            .andExpect(status().isOk()).andExpect(content().string(containsString(startEvent.getCouponId())));
   }
 }
