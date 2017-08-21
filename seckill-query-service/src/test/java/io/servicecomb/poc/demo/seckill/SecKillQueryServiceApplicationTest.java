@@ -7,17 +7,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.servicecomb.poc.demo.CommandQueryApplication;
 import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
+import io.servicecomb.poc.demo.seckill.event.PromotionGrabbedEvent;
+import io.servicecomb.poc.demo.seckill.event.PromotionStartEvent;
+import io.servicecomb.poc.demo.seckill.repositories.CouponEventRepository;
 import io.servicecomb.poc.demo.seckill.repositories.PromotionRepository;
-import io.servicecomb.poc.demo.seckill.repositories.SpringBasedPromotionEventRepository;
+import io.servicecomb.poc.demo.seckill.repositories.SpringBasedCouponEventRepository;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -31,7 +36,7 @@ import org.springframework.test.web.servlet.ResultActions;
 public class SecKillQueryServiceApplicationTest {
 
   @Autowired
-  private SpringBasedPromotionEventRepository repository;
+  private SpringBasedCouponEventRepository repository;
 
   @Autowired
   private PromotionRepository promotionRepository;
@@ -45,19 +50,22 @@ public class SecKillQueryServiceApplicationTest {
       Charset.forName("utf8")
   );
 
+  @Mock
+  private CouponEventRepository couponEventRepository;
+
   @Test
   public void testQuerySuccess() throws Exception {
     Date startTime = new Date();
-    Date finishTime = new Date(startTime.getTime()+10*60*1000);
+    Date finishTime = new Date(startTime.getTime() + 10*60*1000);
 
     Promotion promotionCouponsTest = new Promotion(startTime,finishTime,5,0.8f);
-    PromotionEvent<String> seckillEvent = PromotionEvent.genSecKillCouponEvent(promotionCouponsTest,"iTest");
-    repository.save((PromotionEvent<String>)seckillEvent);
+    PromotionGrabbedEvent<String> grabbedEvent = new PromotionGrabbedEvent<String>(promotionCouponsTest,"iTest");
+    couponEventRepository.save((PromotionGrabbedEvent<String>)grabbedEvent);
 
     this.mockMvc.perform(get("/query/coupons/iTest").contentType(contentType))
         .andExpect(status().isOk()).andExpect(content().string(containsString("iTest")));
 
-    repository.deleteAll();
+//    repository.deleteAll();
   }
 
   @Test
@@ -80,8 +88,8 @@ public class SecKillQueryServiceApplicationTest {
       promotionRepository.save(promotionTest);
       expectCouponIdList.add(promotionTest.getId());
 
-      PromotionEvent<String> startEvent = PromotionEvent.genStartCouponEvent(promotionTest);
-      repository.save((PromotionEvent<String>)startEvent);
+      PromotionStartEvent<String> startEvent = new PromotionStartEvent<String>(promotionTest);
+      couponEventRepository.save((PromotionStartEvent<String>)startEvent);
     }
 
     //check the query result wether is matching
@@ -91,7 +99,7 @@ public class SecKillQueryServiceApplicationTest {
       resultFill.andExpect(content().string(containsString(couponId)));
     }
 
-    repository.deleteAll();
-    promotionRepository.deleteAll();
+//    repository.deleteAll();
+//    promotionRepository.deleteAll();
   }
 }
