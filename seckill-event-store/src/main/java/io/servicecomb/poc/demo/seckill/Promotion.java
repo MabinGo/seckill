@@ -22,7 +22,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class Promotion {
+public class  Promotion {
 
   @Id
   private String id;

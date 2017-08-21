@@ -30,8 +30,8 @@ public class SeckillQueryRestControl {
   }
 
   @RequestMapping(method = RequestMethod.GET,value = "/promotion")
-  public List<Promotion> queryCurrent() {
+  public Promotion queryCurrent() {
     logger.debug("Get request /query/promotion");
-    return (List<Promotion>) secKillEventSubscriber.queryCurrentPromotion();
+    return secKillEventSubscriber.queryCurrentPromotion();
   }
 }

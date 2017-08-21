@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.servicecomb.poc.demo.CommandQueryApplication;
 import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
+import io.servicecomb.poc.demo.seckill.repositories.PromotionRepository;
 import io.servicecomb.poc.demo.seckill.repositories.SpringBasedPromotionEventRepository;
 import java.nio.charset.Charset;
 import java.util.Date;
@@ -30,6 +31,9 @@ public class SecKillQueryServiceApplicationTest {
   private SpringBasedPromotionEventRepository repository;
 
   @Autowired
+  private PromotionRepository promotionRepository;
+
+  @Autowired
   private MockMvc mockMvc;
 
   private MediaType contentType = new MediaType(
@@ -43,7 +47,7 @@ public class SecKillQueryServiceApplicationTest {
     repository.deleteAll();
 
     Date startTime = new Date();
-    Date finishTime = new Date(startTime.getTime()+10*60*1000);
+    Date finishTime = new Date(startTime.getTime()+5*60*1000);
 
     Promotion promotionCouponsTest = new Promotion(startTime,finishTime,5,0.8f);
     PromotionEvent<String> seckillEvent = PromotionEvent.genSecKillCouponEvent(promotionCouponsTest,"mb");
@@ -60,9 +64,15 @@ public class SecKillQueryServiceApplicationTest {
     Date startTime = new Date();
     Date finishTime = new Date(startTime.getTime()+10*60*1000);
 
+
     Promotion promotionTest = new Promotion(startTime,finishTime,3,0.7f);
+    promotionRepository.save(promotionTest);
+
     PromotionEvent<String> startEvent = PromotionEvent.genStartCouponEvent(promotionTest);
     repository.save((PromotionEvent<String>)startEvent);
+
+//    PromotionEvent<String> finishEvent = PromotionEvent.genFinishCouponEvent(promotionTest);
+//    repository.save((PromotionEvent<String>)finishEvent);
 
     this.mockMvc.perform(get("/query/promotion").contentType(contentType))
             .andExpect(status().isOk()).andExpect(content().string(containsString(startEvent.getCouponId())));
