@@ -3,7 +3,6 @@ package io.servicecomb.poc.demo.seckill.web;
 import io.servicecomb.poc.demo.seckill.Coupon;
 import io.servicecomb.poc.demo.seckill.Promotion;
 import io.servicecomb.poc.demo.seckill.SecKillEventSubscriber;
-import io.servicecomb.poc.demo.seckill.event.PromotionEvent;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
