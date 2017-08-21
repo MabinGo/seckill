@@ -25,13 +25,13 @@ public class SeckillQueryRestControl {
 
   @RequestMapping(method = RequestMethod.GET,value = "/coupons/{customerId}")
   public List<Coupon> querySuccess(@PathVariable String customerId) {
-    logger.debug("Get request /query/coupons/%s",customerId);
+    logger.trace("Get request /query/coupons/%s",customerId);
     return secKillEventSubscriber.querySuccessCoupon(customerId);
   }
 
   @RequestMapping(method = RequestMethod.GET,value = "/promotion")
-  public Promotion queryCurrent() {
-    logger.debug("Get request /query/promotion");
+  public List<Promotion> queryCurrent() {
+    logger.trace("Get request /query/promotion");
     return secKillEventSubscriber.queryCurrentPromotion();
   }
 }

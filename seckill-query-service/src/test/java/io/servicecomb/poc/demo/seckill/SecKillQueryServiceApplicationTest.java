@@ -47,7 +47,7 @@ public class SecKillQueryServiceApplicationTest {
     repository.deleteAll();
 
     Date startTime = new Date();
-    Date finishTime = new Date(startTime.getTime()+5*60*1000);
+    Date finishTime = new Date(startTime.getTime()+10*60*1000);
 
     Promotion promotionCouponsTest = new Promotion(startTime,finishTime,5,0.8f);
     PromotionEvent<String> seckillEvent = PromotionEvent.genSecKillCouponEvent(promotionCouponsTest,"mb");
@@ -62,8 +62,7 @@ public class SecKillQueryServiceApplicationTest {
     repository.deleteAll();
 
     Date startTime = new Date();
-    Date finishTime = new Date(startTime.getTime()+10*60*1000);
-
+    Date finishTime = new Date(startTime.getTime()+30*60*1000);
 
     Promotion promotionTest = new Promotion(startTime,finishTime,3,0.7f);
     promotionRepository.save(promotionTest);
@@ -71,10 +70,7 @@ public class SecKillQueryServiceApplicationTest {
     PromotionEvent<String> startEvent = PromotionEvent.genStartCouponEvent(promotionTest);
     repository.save((PromotionEvent<String>)startEvent);
 
-//    PromotionEvent<String> finishEvent = PromotionEvent.genFinishCouponEvent(promotionTest);
-//    repository.save((PromotionEvent<String>)finishEvent);
-
     this.mockMvc.perform(get("/query/promotion").contentType(contentType))
-            .andExpect(status().isOk()).andExpect(content().string(containsString(startEvent.getCouponId())));
+        .andExpect(status().isOk()).andExpect(content().string(containsString(startEvent.getCouponId())));
   }
 }
